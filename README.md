@@ -4,6 +4,8 @@ CCBSAPIとは、"Convenient Chat Bot Service API"の略で、 幅広い環境で
 
 ### 仕様
 
+httpsリクエスト:
+|Method|GET/POST|
 
 ### 使い方
 ```JavaScript
