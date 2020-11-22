@@ -1,16 +1,22 @@
-### Hi there 👋
+### CCBSAPI
+CCBSAPIとは、"Convenient Chat Bot Service API"の略で、 幅広い環境で様々な便利なツールを使うことを可能にする、チャットボット型のAPIサービスです。
+インターネット上の様々な便利な外部サービスやCCBSAPI独自のサービスなどを繋ぎ、 様々なプラットフォームからの便利な機能の利用を容易にします。
 
-<!--
-**ccbsapi/CCBSAPI** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+###仕様
 
-Here are some ideas to get you started:
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+###使い方
+```JavaScript
+var textData="YouTube検索ほげほげ";
+ var endpoint="http://ccbsapi.php.xdomain.jp/v2/";
+ var postObj=[{'type':'text','text':textData}];
+ var xhr=  new XMLHttpRequest();
+ xhr.open("POST",endpoint);
+ xhr.setRequestHeader('Content-Type','application/json');
+ xhr.send(JSON.stringify({'i':postObj}));
+ xhr.onreadystatechange= function(){
+   if(xhr.readyState==4){
+    console.log(JSON.parse(xhr.responseText).html);
+  }
+}
+```
