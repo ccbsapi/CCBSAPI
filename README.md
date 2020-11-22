@@ -16,18 +16,42 @@ httpリクエストボディ:
 | o | CCBSAPI Options Object |
 
 ```JavaScript
-request={
+{
   "method":"POST", //or "GET"
   "Content-Type":"application/json",//or application/x-www-form-urlencoded
   "body":{
     "i":[
-      {"type":"text","text":"ウィキ検索りんご"},
+      {"type":"text","text":"検索ほげほげ"},
     ],
     "o":{
       "inf":"機能が見つかりませんでした"
     }
   }
 }
+```
+
+httpレスポンス:
+```JavaScript
+{
+    "data": [
+        {
+            "type": "text",
+            "content": "https://www.google.co.jp/search?q=%E3%81%BB%E3%81%92%E3%81%BB%E3%81%92"
+        }
+    ],
+    "html": "<div class=\"ccbs_text\"><a href=\"https://www.google.co.jp/search?q=%E3%81%BB%E3%81%92%E3%81%BB%E3%81%92\">https://www.google.co.jp/search?q=%E3%81%BB%E3%81%92%E3%81%BB%E3%81%92</a></div>",
+    "error":  false
+}
+```
+
+Response Object(レスポンス.data):
+```
+| data.type | key | value |
+|-----------|-----|-------|
+| object | content | Array[Response Objects] |
+| text | content | text |
+| image | url | image URL |
+| audio | url | audio URL |
 ```
 
 ### 使い方
