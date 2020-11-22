@@ -45,14 +45,13 @@ httpレスポンス:
 ```
 
 Response Object(レスポンス.data):
-```
 | data.type | key | value |
 |-----------|-----|-------|
 | object | content | Array[Response Objects] |
 | text | content | text |
 | image | url | image URL |
 | audio | url | audio URL |
-```
+
 
 ### 使い方
 ```JavaScript
