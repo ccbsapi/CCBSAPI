@@ -7,14 +7,28 @@ CCBSAPIとは、"Convenient Chat Bot Service API"の略で、 幅広い環境で
 httpsリクエストヘッダ:
 | Method | GET/POST |
 |--------|----------|
-| Content-Type| application/json <br> application/x--www-form-urlencoded |
+| Content-Type| application/json <br> application/x-www-form-urlencoded |
 
 httpリクエストボディ:
 | key | value |
 |-----|-------|
-| i | CCBSAPI Request Object |
-| o | CCBSAPI Request Options |
+| i | CCBSAPI Inputs Object |
+| o | CCBSAPI Options Object |
 
+```JavaScript
+request={
+  "method":"POST", //or "GET"
+  "Content-Type":"application/json",//or application/x-www-form-urlencoded
+  "body":{
+    "i":[
+      {"type":"text","text":"ウィキ検索りんご"},
+    ],
+    "o":{
+      "inf":"機能が見つかりませんでした"
+    }
+  }
+}
+```
 
 ### 使い方
 ```JavaScript
