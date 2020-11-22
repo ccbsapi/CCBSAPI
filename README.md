@@ -13,7 +13,6 @@ httpリクエストボディ:
 | key | value |
 |-----|-------|
 | i | CCBSAPI Request Object |
-|-----|-------|
 | o | CCBSAPI Request Options |
 
 
