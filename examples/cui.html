@@ -1,0 +1,172 @@
+
+<!--
+  これは、コード中にコメントを書かない、とても悪いコードの例です(?)
+  CUIっぽい感じで作ろうとしたけど改行が必要な事に気がついたので
+  二回改行することで送信することにしました。
+  公開するような物を作る予定はなかったが、以外とすぐに作り終わってしまったので
+  とりあえず公開することにしました。
+-->
+<!DOCTYPE html>
+<html><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0">
+  <title>CCBSAPI CUI</title>
+  <style>
+    html,body{
+      height:100%;
+      margin:0;
+      -webkit-text-size-adjust: 100%;
+    }
+    #window{
+      background-color:#101010;
+      color:#fff;
+      word-break:break-all;
+      height:100%;
+      overflow-y:scroll;
+      padding:10px;
+    }
+    .userhead{
+      color:#0f0;
+    }
+    .dirhead{
+      color:#f88;
+    }
+    .input{
+      color:#5ff;
+    }
+    textarea{
+      background-color:rgba(0,0,0,0);
+      color:#fff;
+      outline:none;
+      border:none;
+      margin:0;
+      padding:0;
+      height:100%;
+      flex:1;
+      resize:none;
+    }
+    #window,textarea{
+      font-size:20px;
+      font-family:Sapce Mono,monospace;
+      letter-spacing:0;
+      line-height:20px;
+    }
+    #below{
+      height:80%;
+    }
+    #current{
+     display:none;/*flex*/
+     height:100%;
+     white-space:nowrap;
+    }
+    #window a{
+      color:#ffa;
+    }
+    #window img{
+      max-width:100%;
+    }
+  </style>
+</head><body>
+<div id="window">
+  <a href="index.html" style="color:#fff;">CCBSAPI</a> CUI<br>Double enter to send<br>
+  <div id="connect"></div>
+  <div id="disp"><br></div>
+  <div id="below">
+    <div id="current"><span class="userhead">user</span>:<span class="dirhead">~$&nbsp;</span><textarea id="txt" onKeyUp="input(this)"></textarea></div>
+  </div>
+</div>
+<script>
+
+
+var endpoint="http://ccbsapi.php.xdomain.jp/v2/";
+
+
+var last=0;
+var userhead='<span class="userhead">user</span>:<span class="dirhead">~$ </span>';
+var disp=document.getElementById('disp');
+var connect=document.getElementById('connect');
+var current=document.getElementById('current');
+current.style.display="none";
+var xhr;
+var timer;
+window.onload=init;
+function input(c){
+  var cur=c.value;
+  if(cur.slice(-2)=="\n\n"&&cur.length==last+1){
+    c.value="";
+    run(cur.slice(0,-2));
+  }
+  last=cur.length;
+}
+function run(text){
+  var postObj=[{'type':'text','text':text}];
+  xhr=  new XMLHttpRequest();
+  xhr.open("POST",endpoint);
+  xhr.setRequestHeader('Content-Type','application/json');
+  xhr.send(JSON.stringify({'i':postObj,'o':{inf:"Command not found.Enter 'help' to see the help."}}));
+  disp.innerHTML+=userhead+'<span class="input">'+htmlEncode(text)+'</span><br>';
+  document.getElementById('current').style.display="none";
+  clearTimeout(timer);
+  timer=setTimeout(timeout,15000);
+  xhr.onreadystatechange= function(){
+    if(xhr.readyState==4){
+      document.getElementById('disp').innerHTML+=JSON.parse(xhr.responseText).html;
+      timeout();
+    }
+  }
+}
+
+function htmlEncode(text){
+var chart=[
+["\\n","<br>"]
+,["<","&lt;"]
+,[">","&gt;"]
+,["\\\"","&quot;"]
+,["'","&#039;"]
+,[" ","&nbsp;"]
+,["&","&amp;"]
+]
+for(var i=chart.length-1;i>-1;i--){
+text=text.replace(new RegExp(chart[i][0],'g'),chart[i][1]);
+}
+return text;
+}
+
+function init(){
+  var xhr=  new XMLHttpRequest();
+  xhr.open("GET",endpoint);
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState==4){
+      if(!!xhr.responseText){
+        connect.innerText="Connection Success";
+        timeout();
+      }else{
+        connect.innerText="Connection Failed";
+        timeout();
+      }
+    }
+  };
+  xhr.send();
+  var a="===========";
+  var t=function(){
+    if(current.style.display=="none"){
+      connect.innerText="Connecting["+(a=("#"+a).slice(0,10))+"]";
+      if(a[a.length-1]!="#")setTimeout(t,250);
+      else{
+        if(xhr.status!=200)connect.innerText="Server not found";
+        timeout();
+      }
+    }
+  }
+  t();
+}
+
+
+function timeout(){
+  current.style.display="flex";
+  document.getElementById('txt').focus()
+}
+</script>
+<!--CCBSAPI_PageEnd-->
+</body>
+</html>
