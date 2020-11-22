@@ -35,7 +35,7 @@ httpリクエストボディ:
 }
 ```
 
-httpレスポンス:
+httpレスポンス(JSON):
 ```JavaScript
 {
     "data": [
