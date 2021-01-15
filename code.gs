@@ -1,7 +1,7 @@
 
 /*!***************************
  *
- * CCBSAPI.gs v3.0
+ * CCBSAPI.gs v3.1
  
  Copyright (c) 2020 CCBSAPI
  
@@ -20,7 +20,7 @@
  * http://ccbsapi.html.xdomain.jp/
  *
  *
- *  @version: 3.0
+ *  @version: 3.1
  *
  *
  *  @using:
@@ -126,7 +126,7 @@
                                 ,'factor':function(m){return f_wolf('Factor['+m+']')}
                                 ,'D':function(m){return f_wolf('D['+m+']')}
                                 ,'integrate':function(m){return f_wolf('Integral['+m+']')}
-                                ,'reduce':function(m){return f_wolf('Reduce['+m+']')}
+                                ,'reduce':function(m){return f_wolf('Solve['+m+']')}
                        }
                 }
                 ,'encode':{
@@ -192,11 +192,18 @@
                 
            ,'c':{
            /*commands*/
-                'list':["help","version","tree","commands"]
+                'list':["help","version","tree","commands",'機能','コマンド','天気','今日の天気','明日の天気','news','解く']
                ,'help':function(m){return ff_help(m)}
-               ,'version':function(){return'3.0'}
+               ,'version':function(){return'3.1'}
                ,'tree':function(m){return ff_HelpTree(m)}
+               ,'機能':function(m){return ff_HelpTree(m)}
                ,'commands':function(){return ccbs.c.list.join('\n');}
+               ,'コマンド':function(){return ccbs.c.list.join('\n');}
+               ,'天気':f_weather_weather
+               ,'今日の天気':function(){return f_weather_weather("今日")}
+               ,'明日の天気':function(){return f_weather_weather("明日")}
+               ,'news':f_search_news
+               ,'解く':function(m){return f_wolf('Solve['+m.replace(/\n/g,'')+']')}
                 }
             
            ,'d':{
@@ -1327,14 +1334,18 @@ function ajax_GET_r(url,t,s){
  if(typeof (vll*1)!="number"){vll=5}
  
  var results = YouTube.Search.list("id,snippet",{q :keyword , maxResults: vll});
- var rs="検索結果:\nhttps://youtube.com/results?search_query="+encodeURIComponent(keyword)+"\n\n\n***検索結果リスト***\n\n";
+ var rs=[
+   {
+     type:"text",
+     content:"検索結果:\nhttps://youtube.com/results?search_query="+encodeURIComponent(keyword)
+   }
+  ]
  for(var i in results.items) {
  var item = results.items[i];
  
  var url="https://youtube.com/";
  
  var title=htmlUnescape(item.snippet.title);
- 
  var vid=item.id.videoId+'';
  var plid=item.id.playlistId+'';
  var chid=item.id.channelId+'';
@@ -1342,7 +1353,8 @@ function ajax_GET_r(url,t,s){
  var type="video";
  
  if(vid!="undefined"){
- url+="watch?v="+vid;
+ //url+="watch?v="+vid;
+   url="https://youtu.be/"+vid
  }else
  if(plid!="undefined"){
  url+="playlist?list="+plid;
@@ -1352,9 +1364,13 @@ function ajax_GET_r(url,t,s){
  type="channel";
  }
  
- rs+=title+"\ntype:"+type+"\nurl:"+url+"\n\n\n";
+ rs.push({
+   type:'text',
+   'content':title+"\ntype:"+type+"\nurl:"+url
+ });
+ 
  }
- return [{'type':'text','content':rs}];
+ return rs;
  }
  
  
@@ -1685,7 +1701,7 @@ function ff_searchFunction(dir,st,oSt){
   function ff_help(m){
    if(!m){
    ht=ff_htu_s(ccbs.d.htu,[]);
-   return "【使い方】\nコマンドと機能が使えます。\nコマンドは commands\n機能は tree\nで一覧を確認できます。\n\nコマンドはコマンド名で実行できます。\n例:\ntree\n\n【機能の使い方】\n基本機能は、\n\n【機能名】【値】\n例:YouTube検索うぇーい\n\n値を指定しない場合、その機能の使い方を確認できます。(検索機能を除く)\n\nディレクトリ内にある機能を使うには、\n\n【ディレクトリ名】\n↑×n\n【機能名】\n【値】\n例:\n数学 <---ディレクトリ\n計算 <---機能\n3*5 <---値\n\n値を指定しない場合、その機能の使い方を確認できます。\n機能を指定しない場合、そのディレクトリにある機能・ディレクトリの一覧を確認できます。\n例:\n数学";
+   return "【使い方】\nコマンドと機能が使えます。\nコマンドは「コマンド」\n機能は「機能」\nで一覧を確認できます。\n\nコマンドは【コマンド名】(改行+値)で実行できます。\n例:\n今日の天気\n\n【機能の使い方】\n基本機能は、\n\n【機能名】【値】\n例:YouTube検索うぇーい\n\n値を指定しない場合、その機能の使い方を確認できます。(検索機能を除く)\n\nディレクトリ内にある機能を使うには、\n\n【ディレクトリ名】\n↑×n\n【機能名】\n【値】\n例:\n数学 <---ディレクトリ\n計算 <---機能\n3*5 <---値\n\n値を指定しない場合、その機能の使い方を確認できます。\n機能を指定しない場合、そのディレクトリにある機能・ディレクトリの一覧を確認できます。\n例:\n数学";
    }
    
    var ht='';
