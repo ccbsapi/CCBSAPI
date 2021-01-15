@@ -1,7 +1,7 @@
 
 /*!***************************
  *
- * CCBSAPI.gs v2.9
+ * CCBSAPI.gs v3.0
  
  Copyright (c) 2020 CCBSAPI
  
@@ -20,7 +20,7 @@
  * http://ccbsapi.html.xdomain.jp/
  *
  *
- *  @version: 2.9
+ *  @version: 3.0
  *
  *
  *  @using:
@@ -194,7 +194,7 @@
            /*commands*/
                 'list':["help","version","tree","commands"]
                ,'help':function(m){return ff_help(m)}
-               ,'version':function(){return'2.9'}
+               ,'version':function(){return'3.0'}
                ,'tree':function(m){return ff_HelpTree(m)}
                ,'commands':function(){return ccbs.c.list.join('\n');}
                 }
@@ -1475,19 +1475,29 @@ function f_search_rate(code){
  
 function f_recipe_search(keyword){
   try{
-    var response = UrlFetchApp.fetch("https://www.kyounoryouri.jp/search/recipe?keyword=" + keyword);
-    var url_and_title = response.getContentText().split('class="recipe--category-recipe"').slice(1,1+3);
+    var response = ajax_GET("https://www.kyounoryouri.jp/search/recipe?keyword=" + keyword);
+    var url_and_title = response.split('class="recipe--category-recipe"').slice(1,1+5);
     if(!url_and_title.length)
       return "'"+keyword+"'に関するレシピが見つかりませんでした。";
     
     var recipe = [];
     url_and_title.forEach(str=>{
-      var url = 'https://www.kyounoryouri.jp' + str.match(/data-url="(.*?_)/)[1];
-      var title = str.match(/_(.*?)\./)[1];
-      var img_url = 'https://www.kyounoryouri.jp' + str.match(/src="(.*?)"/)[1];
+      str=str.replace(/\n|\r|\t/g,'');
+      var url = 'https://www.kyounoryouri.jp' + (str.match(/data-url="(.*?_)/)||[,''])[1];
+      var title = (str.match(/_(.*?)\./)||[,''])[1];
+      var time = (str.match(/time">(.*?)</)||[,''])[1];
+      var calorie = (str.match(/calorie">(.*?)</)||[,''])[1];
+      var material = (str.match(/material">(.*?)</)||[,''])[1];
+      var img_url = 'https://www.kyounoryouri.jp' + (str.match(/src="(.*?)"/)||[,''])[1];
       recipe.push(
-        {type:'text',content:title+"\n"+url},
-        {type:'image',url:img_url}
+        {
+          type:'buttons',
+          title:title,
+          thumb:img_url,
+          text:time+calorie+"\n"+material,
+          default:url,
+          actions:[{text:"作り方",url:url}]
+        }
       );
     });
     
@@ -1786,10 +1796,10 @@ function ff_searchFunction(dir,st,oSt){
      return ccbs.e.inf;
     }
    }
-   return ff_HelpTreeRoop(searchObject,"",'');
+   return ff_HelpTreeLoop(searchObject,"",'');
   }
   
-  function ff_HelpTreeRoop(dir,dirName,lines){
+  function ff_HelpTreeLoop(dir,dirName,lines){
    var res=ff_htu_s(dir,[]);
    var res_func=res.func;
    var res_dir=res.dev.directory;
@@ -1800,7 +1810,7 @@ function ff_searchFunction(dir,st,oSt){
    }
    for(var i=0;i<res_dir.length;i++){
     var newDir=dir[res_dir[i]];
-    ret+='\n'+ff_HelpTreeRoop(newDir,res.directory[i],lines+(i==res_dir.length-1?"　":'┃'));
+    ret+='\n'+ff_HelpTreeLoop(newDir,res.directory[i],lines+(i==res_dir.length-1?"　":'┃'));
    }
    return ret;
   }
@@ -1818,6 +1828,7 @@ function ff_searchFunction(dir,st,oSt){
   var retHTML="";
   for(var i=0;i<res.length;i++){
    var rmes=res[i];
+   retHTML+="\n";
    if(rmes.type=='text'){
     retHTML+='<div class="ccbs_text">'+ff_AutoLink(htmlUnescape(rmes.content,1))+"</div>"
    }else
@@ -1826,6 +1837,14 @@ function ff_searchFunction(dir,st,oSt){
    }else
    if(rmes.type=='audio'){
     retHTML+='<audio class="ccbs_contents ccbs_audio" controls src="'+rmes.url+'">お使いのブラウザでは再生できません</audio>';
+   }else
+   if(rmes.type=='buttons'){
+     retHTML+='<div class="ccbs_text">'
+              +'\n<img src="'+rmes.thumb+'" width="100%"><br>'
+              +'\n<h3>'+htmlUnescape(rmes.title||'',1)+'</h3>'
+              +'\n<p>'+htmlUnescape(rmes.text||'',1)+'</p>'
+              +(rmes.actions||[]).map(option=>'<a href="'+option.url+'">'+htmlUnescape(option.text||'',1)+'</a>').join('<br>\n')
+            +'\n</div>';
    }else{
     retHTML+='<div class="ccbs_contents">'+ff_resToHTML(rmes.content)+"</div>"
    }
