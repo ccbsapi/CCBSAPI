@@ -1484,7 +1484,7 @@ function ajax_GET_r(url,t,s){
  
  /*SAGE*/
  function f_sage(code){
-  const endpoint = "https://benri.ga/api/sage.py";
+  const endpoint = "https://benri.tk/api/sage.py";
   const url = endpoint + "?code=" + encodeURIComponent(code);
   const json = UrlFetchApp.fetch(url);
   //Logger.log(json);
