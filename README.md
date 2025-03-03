@@ -1,8 +1,3 @@
-### CCBSAPI
-CCBSAPIとは、"Convenient Chat Bot Service API"の略で、 幅広い環境で様々な便利なツールを使うことを可能にする、チャットボット型のAPIサービスです。
-インターネット上の様々な便利な外部サービスやCCBSAPI独自のサービスなどを繋ぎ、 様々なプラットフォームからの便利な機能の利用を容易にします。
-<a href="http://ccbsapi.html.xdomain.jp">ccbsapi.html.xdomain.jp</a>
-
 ### Web API
 
 http://ccbsapi.php.xdomain.jp/v2/
